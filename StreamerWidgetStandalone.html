@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamer Widget</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #111827;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div id="streamer-widget" class="max-w-sm mx-auto bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl shadow-2xl overflow-hidden">
+            <div class="p-6 bg-white/10 backdrop-blur-lg">
+                <!-- Profile Picture -->
+                <div class="flex justify-center mb-4">
+                    <div class="relative">
+                        <img
+                            id="streamer-picture"
+                            src="https://images.unsplash.com/photo-1610041321461-37a7d578ebad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400"
+                            alt="Streamer"
+                            class="w-32 h-32 rounded-full object-cover border-4 border-white/30 shadow-lg"
+                        />
+                        <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-green-500 rounded-full border-4 border-white/30"></div>
+                    </div>
+                </div>
+
+                <!-- Streamer Name -->
+                <h2 id="streamer-name" class="text-3xl font-bold text-white text-center mb-3">
+                    NightOwl Gaming
+                </h2>
+
+                <!-- Bio -->
+                <p id="streamer-bio" class="text-white/90 text-center mb-6 leading-relaxed px-2">
+                    Professional gamer & content creator. Streaming daily adventures in FPS games and RPGs. Join the NightOwl community!
+                </p>
+
+                <!-- Social Links -->
+                <div id="social-links" class="flex justify-center gap-3 flex-wrap">
+                    <!-- Social icons will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CUSTOMIZE YOUR STREAMER WIDGET HERE
+        // ==========================================
+        const streamerConfig = {
+            name: "NightOwl Gaming",
+            picture: "https://images.unsplash.com/photo-1610041321461-37a7d578ebad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
+            bio: "Professional gamer & content creator. Streaming daily adventures in FPS games and RPGs. Join the NightOwl community!",
+            socials: {
+                twitter: "https://twitter.com/yourhandle",
+                instagram: "https://instagram.com/yourhandle",
+                youtube: "https://youtube.com/@yourchannel",
+                twitch: "https://twitch.tv/yourhandle",
+                website: "https://yourwebsite.com"
+            }
+        };
+
+        // ==========================================
+        // DO NOT EDIT BELOW THIS LINE
+        // ==========================================
+
+        // SVG Icons
+        const icons = {
+            twitter: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>',
+            instagram: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>',
+            youtube: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"></path><path d="m10 15 5-3-5-3z"></path></svg>',
+            twitch: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2H3v16h5v4l4-4h5l4-4V2zm-10 9V7m5 4V7"></path></svg>',
+            website: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" x2="21" y1="14" y2="3"></line></svg>'
+        };
+
+        // Update widget content
+        document.getElementById('streamer-name').textContent = streamerConfig.name;
+        document.getElementById('streamer-picture').src = streamerConfig.picture;
+        document.getElementById('streamer-picture').alt = streamerConfig.name;
+        document.getElementById('streamer-bio').textContent = streamerConfig.bio;
+
+        // Generate social links
+        const socialLinksContainer = document.getElementById('social-links');
+        const platforms = ['twitter', 'instagram', 'youtube', 'twitch', 'website'];
+        
+        platforms.forEach(platform => {
+            if (streamerConfig.socials[platform]) {
+                const link = document.createElement('a');
+                link.href = streamerConfig.socials[platform];
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.className = 'w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 group';
+                link.setAttribute('aria-label', platform.charAt(0).toUpperCase() + platform.slice(1));
+                link.innerHTML = `<span class="text-white group-hover:text-white/90">${icons[platform]}</span>`;
+                socialLinksContainer.appendChild(link);
+            }
+        });
+    </script>
+</body>
+</html>

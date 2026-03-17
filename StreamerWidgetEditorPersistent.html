@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamer Widget Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f3f4f6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        }
+        .editor-panel {
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .preview-panel {
+            background: #111827;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .widget-only-view {
+            display: none;
+            background: #111827;
+            min-height: 100vh;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            ring: 2px;
+            ring-color: #8b5cf6;
+        }
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+        .field-group {
+            margin-bottom: 1.25rem;
+        }
+        .toggle-checkbox {
+            appearance: none;
+            width: 2.75rem;
+            height: 1.5rem;
+            background: #d1d5db;
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .toggle-checkbox:checked {
+            background: #8b5cf6;
+        }
+        .toggle-checkbox::after {
+            content: '';
+            position: absolute;
+            width: 1.25rem;
+            height: 1.25rem;
+            background: white;
+            border-radius: 9999px;
+            top: 0.125rem;
+            left: 0.125rem;
+            transition: transform 0.2s;
+        }
+        .toggle-checkbox:checked::after {
+            transform: translateX(1.25rem);
+        }
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 0.5rem;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #8b5cf6;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #7c3aed;
+        }
+        .btn-secondary {
+            background: #059669;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #047857;
+        }
+        .btn-outline {
+            background: white;
+            color: #8b5cf6;
+            border: 2px solid #8b5cf6;
+        }
+        .btn-outline:hover {
+            background: #f3f4f6;
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .mode-indicator {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .mode-edit {
+            background: #ddd6fe;
+            color: #5b21b6;
+        }
+        .mode-live {
+            background: #d1fae5;
+            color: #065f46;
+        }
+    </style>
+</head>
+<body>
+    <!-- Editor View -->
+    <div id="editor-view" style="display: grid; grid-template-columns: 400px 1fr; height: 100vh;">
+        <!-- Editor Panel -->
+        <div class="editor-panel">
+            <div style="padding: 2rem;">
+                <div class="mode-indicator mode-edit">
+                    ✏️ EDIT MODE
+                </div>
+                
+                <h1 style="font-size: 1.5rem; font-weight: 800; color: #111827; margin-bottom: 0.5rem;">
+                    🎮 Streamer Widget Editor
+                </h1>
+                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 2rem;">
+                    Customize your widget below. Changes are automatically saved!
+                </p>
+
+                <form id="widget-form">
+                    <!-- Basic Info Section -->
+                    <div class="section-title">✨ Basic Information</div>
+                    
+                    <div class="field-group">
+                        <label for="streamer-name">Streamer Name</label>
+                        <input type="text" id="streamer-name" placeholder="Enter your name" value="NightOwl Gaming">
+                    </div>
+
+                    <div class="field-group">
+                        <label for="streamer-picture">Profile Picture URL</label>
+                        <input type="text" id="streamer-picture" placeholder="https://..." value="https://images.unsplash.com/photo-1610041321461-37a7d578ebad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400">
+                        <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                            Tip: Upload to Imgur or ImgBB and paste the link
+                        </p>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="streamer-bio">Bio</label>
+                        <textarea id="streamer-bio" rows="3" placeholder="Tell viewers about yourself">Professional gamer & content creator. Streaming daily adventures in FPS games and RPGs. Join the NightOwl community!</textarea>
+                    </div>
+
+                    <!-- Social Links Section -->
+                    <div class="section-title" style="margin-top: 2rem;">🔗 Social Links</div>
+                    
+                    <div class="field-group">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <label style="margin: 0;">Twitter</label>
+                            <input type="checkbox" class="toggle-checkbox" id="toggle-twitter" checked>
+                        </div>
+                        <input type="text" id="social-twitter" placeholder="https://twitter.com/yourhandle" value="https://twitter.com">
+                    </div>
+
+                    <div class="field-group">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <label style="margin: 0;">Instagram</label>
+                            <input type="checkbox" class="toggle-checkbox" id="toggle-instagram" checked>
+                        </div>
+                        <input type="text" id="social-instagram" placeholder="https://instagram.com/yourhandle" value="https://instagram.com">
+                    </div>
+
+                    <div class="field-group">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <label style="margin: 0;">YouTube</label>
+                            <input type="checkbox" class="toggle-checkbox" id="toggle-youtube" checked>
+                        </div>
+                        <input type="text" id="social-youtube" placeholder="https://youtube.com/@yourchannel" value="https://youtube.com">
+                    </div>
+
+                    <div class="field-group">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <label style="margin: 0;">Twitch</label>
+                            <input type="checkbox" class="toggle-checkbox" id="toggle-twitch" checked>
+                        </div>
+                        <input type="text" id="social-twitch" placeholder="https://twitch.tv/yourhandle" value="https://twitch.tv">
+                    </div>
+
+                    <div class="field-group">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <label style="margin: 0;">Website</label>
+                            <input type="checkbox" class="toggle-checkbox" id="toggle-website" checked>
+                        </div>
+                        <input type="text" id="social-website" placeholder="https://yourwebsite.com" value="https://example.com">
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #e5e7eb;">
+                        <button type="button" class="btn btn-outline" onclick="toggleView()">
+                            👁️ Switch to Widget View
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="copyEmbedCode()">
+                            📋 Copy Embed Code
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="downloadWidgetOnly()">
+                            💾 Download Widget Only (No Editor)
+                        </button>
+                        <p style="font-size: 0.75rem; color: #6b7280; margin-top: 1rem; text-align: center;">
+                            Your changes are saved automatically!
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div style="padding: 3rem;">
+                <div style="max-width: 400px; margin: 0 auto;">
+                    <div id="preview-widget"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Widget Only View -->
+    <div id="widget-only-view" class="widget-only-view">
+        <div style="padding: 1rem; text-align: right;">
+            <button onclick="toggleView()" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem; font-weight: 600;">
+                ⚙️ Edit Widget
+            </button>
+        </div>
+        <div class="flex items-center justify-center" style="display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 4rem); padding: 2rem;">
+            <div id="live-widget"></div>
+        </div>
+    </div>
+
+    <script>
+        // SVG Icons
+        const icons = {
+            twitter: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>',
+            instagram: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>',
+            youtube: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"></path><path d="m10 15 5-3-5-3z"></path></svg>',
+            twitch: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2H3v16h5v4l4-4h5l4-4V2zm-10 9V7m5 4V7"></path></svg>',
+            website: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" x2="21" y1="14" y2="3"></line></svg>'
+        };
+
+        // Load saved data from localStorage
+        function loadSavedData() {
+            const saved = localStorage.getItem('streamerWidgetData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('streamer-name').value = data.name || '';
+                document.getElementById('streamer-picture').value = data.picture || '';
+                document.getElementById('streamer-bio').value = data.bio || '';
+                
+                if (data.socials) {
+                    Object.keys(data.socials).forEach(platform => {
+                        const toggle = document.getElementById(`toggle-${platform}`);
+                        const input = document.getElementById(`social-${platform}`);
+                        if (toggle && input && data.socials[platform]) {
+                            toggle.checked = data.socials[platform].enabled;
+                            input.value = data.socials[platform].url;
+                        }
+                    });
+                }
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            const data = getWidgetData();
+            localStorage.setItem('streamerWidgetData', JSON.stringify({
+                name: data.name,
+                picture: data.picture,
+                bio: data.bio,
+                socials: {
+                    twitter: { enabled: document.getElementById('toggle-twitter').checked, url: document.getElementById('social-twitter').value },
+                    instagram: { enabled: document.getElementById('toggle-instagram').checked, url: document.getElementById('social-instagram').value },
+                    youtube: { enabled: document.getElementById('toggle-youtube').checked, url: document.getElementById('social-youtube').value },
+                    twitch: { enabled: document.getElementById('toggle-twitch').checked, url: document.getElementById('social-twitch').value },
+                    website: { enabled: document.getElementById('toggle-website').checked, url: document.getElementById('social-website').value }
+                }
+            }));
+        }
+
+        // Get current widget data
+        function getWidgetData() {
+            return {
+                name: document.getElementById('streamer-name').value,
+                picture: document.getElementById('streamer-picture').value,
+                bio: document.getElementById('streamer-bio').value,
+                socials: {
+                    twitter: document.getElementById('toggle-twitter').checked ? document.getElementById('social-twitter').value : '',
+                    instagram: document.getElementById('toggle-instagram').checked ? document.getElementById('social-instagram').value : '',
+                    youtube: document.getElementById('toggle-youtube').checked ? document.getElementById('social-youtube').value : '',
+                    twitch: document.getElementById('toggle-twitch').checked ? document.getElementById('social-twitch').value : '',
+                    website: document.getElementById('toggle-website').checked ? document.getElementById('social-website').value : ''
+                }
+            };
+        }
+
+        // Generate widget HTML
+        function generateWidgetHTML(data) {
+            const socialLinks = Object.entries(data.socials)
+                .filter(([_, url]) => url)
+                .map(([platform, url]) => `
+                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 group" aria-label="${platform.charAt(0).toUpperCase() + platform.slice(1)}">
+                        <span class="text-white group-hover:text-white/90">${icons[platform]}</span>
+                    </a>`)
+                .join('\n                    ');
+
+            return `<div class="max-w-sm mx-auto bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl shadow-2xl overflow-hidden">
+                <div class="p-6 bg-white/10 backdrop-blur-lg">
+                    <div class="flex justify-center mb-4">
+                        <div class="relative">
+                            <img
+                                src="${data.picture}"
+                                alt="${data.name}"
+                                class="w-32 h-32 rounded-full object-cover border-4 border-white/30 shadow-lg"
+                            />
+                            <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-green-500 rounded-full border-4 border-white/30"></div>
+                        </div>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white text-center mb-3">
+                        ${data.name}
+                    </h2>
+                    <p class="text-white/90 text-center mb-6 leading-relaxed px-2">
+                        ${data.bio}
+                    </p>
+                    <div class="flex justify-center gap-3 flex-wrap">
+                        ${socialLinks}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // Update preview
+        function updatePreview() {
+            const data = getWidgetData();
+            const widgetHTML = generateWidgetHTML(data);
+            document.getElementById('preview-widget').innerHTML = widgetHTML;
+            document.getElementById('live-widget').innerHTML = widgetHTML;
+            saveData();
+        }
+
+        // Toggle between editor and widget view
+        function toggleView() {
+            const editorView = document.getElementById('editor-view');
+            const widgetView = document.getElementById('widget-only-view');
+            
+            if (editorView.style.display === 'none') {
+                editorView.style.display = 'grid';
+                widgetView.style.display = 'none';
+            } else {
+                editorView.style.display = 'none';
+                widgetView.style.display = 'block';
+                updatePreview(); // Refresh widget view
+            }
+        }
+
+        // Generate standalone HTML (widget only, no editor)
+        function generateStandaloneHTML() {
+            const data = getWidgetData();
+            const socialLinks = Object.entries(data.socials)
+                .filter(([_, url]) => url)
+                .map(([platform, url]) => `
+                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 group" aria-label="${platform.charAt(0).toUpperCase() + platform.slice(1)}">
+                        <span class="text-white group-hover:text-white/90">${icons[platform]}</span>
+                    </a>`)
+                .join('\n                    ');
+            
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${data.name} - Streamer Widget</title>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #111827;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-sm mx-auto bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl shadow-2xl overflow-hidden">
+            <div class="p-6 bg-white/10 backdrop-blur-lg">
+                <div class="flex justify-center mb-4">
+                    <div class="relative">
+                        <img
+                            src="${data.picture}"
+                            alt="${data.name}"
+                            class="w-32 h-32 rounded-full object-cover border-4 border-white/30 shadow-lg"
+                        />
+                        <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-green-500 rounded-full border-4 border-white/30"></div>
+                    </div>
+                </div>
+                <h2 class="text-3xl font-bold text-white text-center mb-3">
+                    ${data.name}
+                </h2>
+                <p class="text-white/90 text-center mb-6 leading-relaxed px-2">
+                    ${data.bio}
+                </p>
+                <div class="flex justify-center gap-3 flex-wrap">
+${socialLinks}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+        }
+
+        // Copy embed code to clipboard
+        function copyEmbedCode() {
+            const html = generateStandaloneHTML();
+            navigator.clipboard.writeText(html).then(() => {
+                alert('✅ Embed code copied to clipboard! Paste it into your GoDaddy HTML editor.');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('❌ Failed to copy. Please try again.');
+            });
+        }
+
+        // Download widget only HTML (no editor)
+        function downloadWidgetOnly() {
+            const data = getWidgetData();
+            const html = generateStandaloneHTML();
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'streamer-widget.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Add event listeners for real-time updates
+        document.getElementById('widget-form').addEventListener('input', updatePreview);
+        document.getElementById('widget-form').addEventListener('change', updatePreview);
+
+        // Load saved data and initial preview
+        loadSavedData();
+        updatePreview();
+
+        // Check URL parameter to determine initial view
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('view') === 'widget') {
+            toggleView();
+        }
+    </script>
+</body>
+</html>
